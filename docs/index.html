@@ -1,0 +1,632 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Agents — From Concepts to Deployment</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css"
+    />
+    <style>
+      :root {
+        --r-heading-font: "Inter", "Helvetica Neue", Arial, sans-serif;
+        --r-main-font: "Inter", "Helvetica Neue", Arial, sans-serif;
+      }
+      .reveal h1,
+      .reveal h2,
+      .reveal h3 {
+        text-transform: none;
+      }
+      .reveal .subtitle {
+        font-size: 0.6em;
+        color: #999;
+        margin-top: 0.4em;
+      }
+      .reveal .emoji {
+        font-style: normal;
+      }
+      .reveal ul {
+        font-size: 0.85em;
+      }
+      .reveal pre {
+        width: 100%;
+        font-size: 0.48em;
+      }
+      .reveal .small-text {
+        font-size: 0.6em;
+        color: #aaa;
+      }
+      .reveal .two-col {
+        display: flex;
+        gap: 2em;
+      }
+      .reveal .two-col > div {
+        flex: 1;
+      }
+      .reveal .highlight-box {
+        background: rgba(66, 133, 244, 0.15);
+        border-left: 4px solid #4285f4;
+        padding: 0.6em 1em;
+        border-radius: 6px;
+        margin: 0.5em 0;
+      }
+      .reveal .component-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1em;
+        font-size: 0.75em;
+      }
+      .reveal .component-card {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 10px;
+        padding: 1em;
+        text-align: left;
+      }
+      .reveal .component-card h4 {
+        margin: 0 0 0.3em;
+        color: #4fc3f7;
+      }
+      .reveal .framework-table {
+        font-size: 0.6em;
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .reveal .framework-table th,
+      .reveal .framework-table td {
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        padding: 0.5em 0.7em;
+        text-align: left;
+      }
+      .reveal .framework-table th {
+        background: rgba(66, 133, 244, 0.25);
+      }
+      .reveal .architecture-flow {
+        font-size: 0.7em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5em;
+        flex-wrap: wrap;
+        margin: 1em 0;
+      }
+      .reveal .flow-box {
+        background: rgba(66, 133, 244, 0.2);
+        border: 1px solid #4285f4;
+        border-radius: 8px;
+        padding: 0.5em 1em;
+      }
+      .reveal .flow-arrow {
+        font-size: 1.5em;
+        color: #4285f4;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <!-- ============ TITLE SLIDE ============ -->
+        <section>
+          <h1>🤖 AI Agents</h1>
+          <p class="subtitle">From Concepts to Deployment</p>
+          <p class="small-text">March 2026</p>
+        </section>
+
+        <!-- ============ AGENDA ============ -->
+        <section>
+          <h2>Agenda</h2>
+          <ol>
+            <li>What Are AI Agents?</li>
+            <li>Core Components of an Agent</li>
+            <li>Agentic Design Patterns</li>
+            <li>Popular Frameworks</li>
+            <li>Building an Agent — Code Walkthrough</li>
+            <li>Deploying Agents</li>
+            <li>Key Takeaways</li>
+          </ol>
+        </section>
+
+        <!-- ============ WHAT ARE AI AGENTS? ============ -->
+        <section>
+          <section>
+            <h2>What Are AI Agents?</h2>
+            <div class="highlight-box">
+              <p>
+                An <strong>AI Agent</strong> is a system that uses an LLM as its
+                core reasoning engine to <em>autonomously</em> decide what
+                actions to take and in what order, in order to accomplish a
+                user-defined goal.
+              </p>
+            </div>
+          </section>
+          <section>
+            <h3>Chatbot vs. Agent</h3>
+            <div class="two-col">
+              <div>
+                <h4 style="color: #f44336">Chatbot</h4>
+                <ul>
+                  <li>Reactive — responds to prompts</li>
+                  <li>Single turn or simple multi-turn</li>
+                  <li>No tool use</li>
+                  <li>No planning / reasoning loop</li>
+                </ul>
+              </div>
+              <div>
+                <h4 style="color: #4caf50">Agent</h4>
+                <ul>
+                  <li>Proactive — plans &amp; acts</li>
+                  <li>Multi-step reasoning</li>
+                  <li>Uses tools &amp; APIs</li>
+                  <li>Observe → Think → Act loop</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+          <section>
+            <h3>The Agent Loop</h3>
+            <div class="architecture-flow">
+              <div class="flow-box">🧑 User Goal</div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-box">🧠 LLM Reasoning</div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-box">🔧 Tool / Action</div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-box">👀 Observation</div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-box">🔁 Repeat or ✅ Done</div>
+            </div>
+            <p class="small-text">
+              Also known as the <strong>ReAct</strong> (Reasoning + Acting) loop
+            </p>
+          </section>
+        </section>
+
+        <!-- ============ CORE COMPONENTS ============ -->
+        <section>
+          <section>
+            <h2>Core Components of an Agent</h2>
+          </section>
+          <section>
+            <div class="component-grid">
+              <div class="component-card">
+                <h4>🧠 LLM (Brain)</h4>
+                <p>
+                  The foundation model (GPT-4o, Claude, Gemini, Llama, etc.)
+                  that powers reasoning, planning, and language understanding.
+                </p>
+              </div>
+              <div class="component-card">
+                <h4>🔧 Tools</h4>
+                <p>
+                  External capabilities the agent can invoke: web search, code
+                  execution, database queries, API calls, file I/O, etc.
+                </p>
+              </div>
+              <div class="component-card">
+                <h4>🗂️ Memory</h4>
+                <p>
+                  <strong>Short-term:</strong> conversation context.<br />
+                  <strong>Long-term:</strong> vector stores, knowledge bases, or
+                  persistent state across sessions.
+                </p>
+              </div>
+              <div class="component-card">
+                <h4>📋 Planning / Orchestration</h4>
+                <p>
+                  Strategy for decomposing goals into sub-tasks, choosing tools,
+                  handling errors, and deciding when to stop.
+                </p>
+              </div>
+            </div>
+          </section>
+          <section>
+            <h3>How Components Interact</h3>
+            <div class="architecture-flow">
+              <div class="flow-box">📋 Planner</div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-box">🧠 LLM</div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-box">🔧 Tools</div>
+            </div>
+            <div class="architecture-flow">
+              <div class="flow-box">🔧 Tools</div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-box">🗂️ Memory</div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-box">🧠 LLM</div>
+            </div>
+            <p class="small-text">
+              Memory feeds context back into the LLM for subsequent reasoning
+              steps
+            </p>
+          </section>
+        </section>
+
+        <!-- ============ AGENTIC DESIGN PATTERNS ============ -->
+        <section>
+          <section>
+            <h2>Agentic Design Patterns</h2>
+          </section>
+          <section>
+            <h3>Single Agent</h3>
+            <div class="highlight-box">
+              One LLM handles all reasoning, tool calls, and decisions in a
+              single loop. Simplest to build but limited in complexity.
+            </div>
+            <pre><code class="language-text">User → [Agent + Tools] → Response</code></pre>
+          </section>
+          <section>
+            <h3>Multi-Agent</h3>
+            <div class="highlight-box">
+              Multiple specialized agents collaborate. Each has its own system
+              prompt, tools, and responsibilities. A supervisor or router
+              delegates tasks.
+            </div>
+            <pre><code class="language-text">User → Supervisor Agent
+            ├── Research Agent (web search)
+            ├── Coder Agent (code gen)
+            └── Reviewer Agent (validation)</code></pre>
+          </section>
+          <section>
+            <h3>Other Patterns</h3>
+            <ul>
+              <li>
+                <strong>Reflection:</strong> Agent critiques its own output and
+                iterates
+              </li>
+              <li>
+                <strong>Plan-and-Execute:</strong> Separate planning step, then
+                sequential execution
+              </li>
+              <li>
+                <strong>Tool-use / Function Calling:</strong> LLM selects from
+                structured tool definitions
+              </li>
+              <li>
+                <strong>RAG + Agent:</strong> Retrieval-augmented generation as a
+                tool inside the agent loop
+              </li>
+              <li>
+                <strong>Human-in-the-loop:</strong> Agent pauses for user
+                approval at critical steps
+              </li>
+            </ul>
+          </section>
+        </section>
+
+        <!-- ============ FRAMEWORKS ============ -->
+        <section>
+          <section>
+            <h2>Popular Agent Frameworks</h2>
+          </section>
+          <section>
+            <table class="framework-table">
+              <thead>
+                <tr>
+                  <th>Framework</th>
+                  <th>By</th>
+                  <th>Language</th>
+                  <th>Highlights</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>LangGraph</strong></td>
+                  <td>LangChain</td>
+                  <td>Python / JS</td>
+                  <td>
+                    Graph-based orchestration, cycles, persistence,
+                    human-in-the-loop
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>CrewAI</strong></td>
+                  <td>CrewAI Inc.</td>
+                  <td>Python</td>
+                  <td>
+                    Role-based multi-agent teams, built-in task delegation
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>AutoGen</strong></td>
+                  <td>Microsoft</td>
+                  <td>Python / .NET</td>
+                  <td>
+                    Multi-agent conversations, code execution, extensible
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>OpenAI Agents SDK</strong></td>
+                  <td>OpenAI</td>
+                  <td>Python</td>
+                  <td>
+                    Lightweight, built-in tracing, handoffs, guardrails
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>Semantic Kernel</strong></td>
+                  <td>Microsoft</td>
+                  <td>C# / Python / Java</td>
+                  <td>
+                    Enterprise-ready, plugins, planners, Azure integration
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>Haystack</strong></td>
+                  <td>deepset</td>
+                  <td>Python</td>
+                  <td>Pipeline-based, strong RAG support, modular</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+          <section>
+            <h3>Choosing a Framework</h3>
+            <ul>
+              <li>
+                <strong>Simple single agent?</strong> → OpenAI Agents SDK or
+                LangGraph
+              </li>
+              <li>
+                <strong>Multi-agent teams?</strong> → CrewAI or AutoGen
+              </li>
+              <li>
+                <strong>Enterprise / .NET?</strong> → Semantic Kernel or AutoGen
+              </li>
+              <li>
+                <strong>Graph-based workflows?</strong> → LangGraph
+              </li>
+              <li>
+                <strong>RAG-heavy pipelines?</strong> → Haystack
+              </li>
+            </ul>
+          </section>
+        </section>
+
+        <!-- ============ CODE WALKTHROUGH ============ -->
+        <section>
+          <section>
+            <h2>Building an Agent</h2>
+            <p class="subtitle">Code Walkthrough with OpenAI Agents SDK</p>
+          </section>
+          <section>
+            <h3>1 — Install</h3>
+            <pre><code class="language-bash">pip install openai-agents</code></pre>
+          </section>
+          <section>
+            <h3>2 — Define Tools</h3>
+            <pre><code class="language-python">from agents import function_tool
+
+@function_tool
+def get_weather(city: str) -> str:
+    """Get current weather for a city."""
+    # In production, call a real weather API
+    return f"The weather in {city} is 72°F and sunny."
+
+@function_tool
+def search_web(query: str) -> str:
+    """Search the web for information."""
+    # In production, call a search API
+    return f"Top result for '{query}': ..."
+</code></pre>
+          </section>
+          <section>
+            <h3>3 — Create the Agent</h3>
+            <pre><code class="language-python">from agents import Agent
+
+agent = Agent(
+    name="Assistant",
+    instructions="""You are a helpful assistant.
+    Use available tools to answer questions accurately.
+    Always cite your sources when using search.""",
+    tools=[get_weather, search_web],
+    model="gpt-4o",
+)
+</code></pre>
+          </section>
+          <section>
+            <h3>4 — Run the Agent</h3>
+            <pre><code class="language-python">from agents import Runner
+
+result = Runner.run_sync(
+    agent,
+    "What's the weather in San Francisco?"
+)
+
+print(result.final_output)
+# → "The weather in San Francisco is 72°F and sunny."
+</code></pre>
+          </section>
+          <section>
+            <h3>5 — Multi-Agent Handoff</h3>
+            <pre><code class="language-python">from agents import Agent
+
+# Specialist agents
+weather_agent = Agent(
+    name="Weather Agent",
+    instructions="You handle weather queries only.",
+    tools=[get_weather],
+)
+
+research_agent = Agent(
+    name="Research Agent",
+    instructions="You handle research queries only.",
+    tools=[search_web],
+)
+
+# Triage agent delegates to specialists
+triage_agent = Agent(
+    name="Triage Agent",
+    instructions="""Determine the user's intent and
+    hand off to the appropriate specialist.""",
+    handoffs=[weather_agent, research_agent],
+)
+
+result = Runner.run_sync(
+    triage_agent,
+    "What's the weather like in Tokyo?"
+)
+print(result.final_output)
+</code></pre>
+          </section>
+        </section>
+
+        <!-- ============ DEPLOYING AGENTS ============ -->
+        <section>
+          <section>
+            <h2>Deploying Agents</h2>
+          </section>
+          <section>
+            <h3>Deployment Options</h3>
+            <div class="component-grid">
+              <div class="component-card">
+                <h4>🐳 Containers</h4>
+                <p>
+                  Package agent as a Docker container. Deploy on Kubernetes,
+                  ECS, or Azure Container Apps for scalability.
+                </p>
+              </div>
+              <div class="component-card">
+                <h4>⚡ Serverless</h4>
+                <p>
+                  AWS Lambda, Azure Functions, or GCP Cloud Functions. Great for
+                  event-driven agents with sporadic usage.
+                </p>
+              </div>
+              <div class="component-card">
+                <h4>☁️ Managed Platforms</h4>
+                <p>
+                  LangSmith, Azure AI Agent Service, AWS Bedrock Agents.
+                  Hosting, tracing, and monitoring included.
+                </p>
+              </div>
+              <div class="component-card">
+                <h4>🖥️ API Server</h4>
+                <p>
+                  Wrap agent in FastAPI / Flask. Expose REST or WebSocket
+                  endpoints. Deploy on any VM or PaaS.
+                </p>
+              </div>
+            </div>
+          </section>
+          <section>
+            <h3>Example: FastAPI + Docker</h3>
+            <pre><code class="language-python"># app.py
+from fastapi import FastAPI
+from agents import Agent, Runner
+
+app = FastAPI()
+
+agent = Agent(
+    name="Assistant",
+    instructions="You are a helpful assistant.",
+    tools=[get_weather, search_web],
+)
+
+@app.post("/chat")
+async def chat(user_message: str):
+    result = await Runner.run(agent, user_message)
+    return {"response": result.final_output}
+</code></pre>
+          </section>
+          <section>
+            <h3>Dockerfile</h3>
+            <pre><code class="language-dockerfile">FROM python:3.12-slim
+
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+EXPOSE 8000
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+</code></pre>
+            <pre><code class="language-bash"># Build &amp; run
+docker build -t ai-agent .
+docker run -p 8000:8000 -e OPENAI_API_KEY=$KEY ai-agent</code></pre>
+          </section>
+          <section>
+            <h3>Production Checklist</h3>
+            <ul>
+              <li>
+                ✅ <strong>Observability</strong> — tracing, logging, metrics
+                (LangSmith, OpenTelemetry)
+              </li>
+              <li>
+                ✅ <strong>Guardrails</strong> — input/output validation,
+                content filters
+              </li>
+              <li>
+                ✅ <strong>Rate limiting</strong> — protect LLM API costs
+              </li>
+              <li>
+                ✅ <strong>Error handling</strong> — retries, fallbacks, circuit
+                breakers
+              </li>
+              <li>
+                ✅ <strong>Security</strong> — secrets management,
+                least-privilege tool access
+              </li>
+              <li>
+                ✅ <strong>Evaluation</strong> — automated evals, A/B testing
+              </li>
+            </ul>
+          </section>
+        </section>
+
+        <!-- ============ TAKEAWAYS ============ -->
+        <section>
+          <h2>Key Takeaways</h2>
+          <ol>
+            <li>Agents = LLM + Tools + Memory + Planning</li>
+            <li>
+              The <strong>ReAct loop</strong> is the fundamental pattern
+            </li>
+            <li>
+              Choose a framework that fits your complexity &amp; ecosystem
+            </li>
+            <li>
+              Start simple (single agent) → evolve to multi-agent when needed
+            </li>
+            <li>
+              Treat deployment like any production service — observability,
+              security, evals
+            </li>
+          </ol>
+        </section>
+
+        <!-- ============ THANK YOU ============ -->
+        <section>
+          <h1>Thank You! 🙏</h1>
+          <p class="subtitle">Questions?</p>
+        </section>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+    <script>
+      Reveal.initialize({
+        hash: true,
+        slideNumber: true,
+        transition: "slide",
+        plugins: [RevealHighlight, RevealNotes],
+      });
+    </script>
+  </body>
+</html>
