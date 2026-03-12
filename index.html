@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="node_modules/reveal.js/dist/theme/black.css" />
     <link
       rel="stylesheet"
-      href="node_modules/reveal.js/plugin/highlight/monokai.css"
+      href="node_modules/reveal.js/dist/plugin/highlight/monokai.css"
     />
     <style>
       :root {
@@ -34,7 +34,11 @@
       }
       .reveal pre {
         width: 100%;
-        font-size: 0.48em;
+        font-size: 0.40em;
+      }
+      .reveal pre code {
+        max-height: 480px;
+        line-height: 1.3;
       }
       .reveal .small-text {
         font-size: 0.6em;
@@ -57,29 +61,33 @@
       .reveal .component-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 1em;
-        font-size: 0.75em;
+        gap: 0.5em;
+        font-size: 0.55em;
       }
       .reveal .component-card {
         background: rgba(255, 255, 255, 0.05);
         border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 10px;
-        padding: 1em;
+        border-radius: 8px;
+        padding: 0.5em 0.7em;
         text-align: left;
       }
+      .reveal .component-card p {
+        margin: 0;
+      }
       .reveal .component-card h4 {
-        margin: 0 0 0.3em;
+        margin: 0 0 0.2em;
         color: #4fc3f7;
+        font-size: 1.1em;
       }
       .reveal .framework-table {
-        font-size: 0.6em;
+        font-size: 0.45em;
         width: 100%;
         border-collapse: collapse;
       }
       .reveal .framework-table th,
       .reveal .framework-table td {
         border: 1px solid rgba(255, 255, 255, 0.15);
-        padding: 0.5em 0.7em;
+        padding: 0.35em 0.5em;
         text-align: left;
       }
       .reveal .framework-table th {
@@ -104,9 +112,30 @@
         font-size: 1.5em;
         color: #4285f4;
       }
+      @keyframes flowDash {
+        to { stroke-dashoffset: -20; }
+      }
+      .flow-path {
+        stroke-dasharray: 8 4;
+        animation: flowDash 0.6s linear infinite;
+      }
     </style>
   </head>
   <body>
+    <!-- Global SVG marker definitions -->
+    <svg style="position:absolute;width:0;height:0;overflow:hidden">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse" fill="#4285f4">
+          <path d="M 0 0 L 10 5 L 0 10 z"/>
+        </marker>
+        <marker id="arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse" fill="#4caf50">
+          <path d="M 0 0 L 10 5 L 0 10 z"/>
+        </marker>
+        <marker id="arrow-orange" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse" fill="#ff9800">
+          <path d="M 0 0 L 10 5 L 0 10 z"/>
+        </marker>
+      </defs>
+    </svg>
     <div class="reveal">
       <div class="slides">
         <!-- ============ TITLE SLIDE ============ -->
@@ -143,46 +172,6 @@
               </p>
             </div>
           </section>
-          <section>
-            <h3>Chatbot vs. Agent</h3>
-            <div class="two-col">
-              <div>
-                <h4 style="color: #f44336">Chatbot</h4>
-                <ul>
-                  <li>Reactive — responds to prompts</li>
-                  <li>Single turn or simple multi-turn</li>
-                  <li>No tool use</li>
-                  <li>No planning / reasoning loop</li>
-                </ul>
-              </div>
-              <div>
-                <h4 style="color: #4caf50">Agent</h4>
-                <ul>
-                  <li>Proactive — plans &amp; acts</li>
-                  <li>Multi-step reasoning</li>
-                  <li>Uses tools &amp; APIs</li>
-                  <li>Observe → Think → Act loop</li>
-                </ul>
-              </div>
-            </div>
-          </section>
-          <section>
-            <h3>The Agent Loop</h3>
-            <div class="architecture-flow">
-              <div class="flow-box">🧑 User Goal</div>
-              <div class="flow-arrow">→</div>
-              <div class="flow-box">🧠 LLM Reasoning</div>
-              <div class="flow-arrow">→</div>
-              <div class="flow-box">🔧 Tool / Action</div>
-              <div class="flow-arrow">→</div>
-              <div class="flow-box">👀 Observation</div>
-              <div class="flow-arrow">→</div>
-              <div class="flow-box">🔁 Repeat or ✅ Done</div>
-            </div>
-            <p class="small-text">
-              Also known as the <strong>ReAct</strong> (Reasoning + Acting) loop
-            </p>
-          </section>
         </section>
 
         <!-- ============ CORE COMPONENTS ============ -->
@@ -190,59 +179,207 @@
           <section>
             <h2>Core Components of an Agent</h2>
           </section>
+          <!-- AWS Agentcore Architecture -->
           <section>
+            <h3>AWS Agentcore Architecture</h3>
+            <img src="Agentcore.png" alt="AWS Agentcore Architecture" style="max-height:480px;border-radius:8px;box-shadow:0 4px 24px rgba(0,0,0,0.4)"/>
+            <p class="small-text">Source: © 2026, Amazon Web Services, Inc.</p>
+          </section>
+          <section>
+            <h3>Brain &amp; Skills</h3>
             <div class="component-grid">
               <div class="component-card">
-                <h4>🧠 LLM (Brain)</h4>
+                <h4>🧠 Foundation Model (LLM)</h4>
                 <p>
-                  The foundation model (GPT-4o, Claude, Gemini, Llama, etc.)
-                  that powers reasoning, planning, and language understanding.
+                  The "brain" — Claude, GPT-4o, Gemini, Llama, etc.
+                  Handles reasoning, task decomposition, and language understanding.
                 </p>
               </div>
               <div class="component-card">
-                <h4>🔧 Tools</h4>
+                <h4>🏗️ Agent Framework</h4>
                 <p>
-                  External capabilities the agent can invoke: web search, code
-                  execution, database queries, API calls, file I/O, etc.
+                  <strong>Strands Agents SDK</strong> — build agents with simple
+                  prompts. Open-source, model-agnostic, Python-native.
                 </p>
               </div>
               <div class="component-card">
-                <h4>🗂️ Memory</h4>
+                <h4>📝 Skills (SKILL.md)</h4>
                 <p>
-                  <strong>Short-term:</strong> conversation context.<br />
-                  <strong>Long-term:</strong> vector stores, knowledge bases, or
-                  persistent state across sessions.
+                  Packaged instructions that define role, workflow &amp;
+                  constraints — portable across Claude, Codex &amp; more.
                 </p>
               </div>
               <div class="component-card">
-                <h4>📋 Planning / Orchestration</h4>
+                <h4>📚 Knowledge Bases (RAG)</h4>
                 <p>
-                  Strategy for decomposing goals into sub-tasks, choosing tools,
-                  handling errors, and deciding when to stop.
+                  Private data sources (S3, databases, vector stores)
+                  for accurate, context-aware retrieval.
+                </p>
+              </div>
+            </div>
+          </section>
+          <section>
+            <h3>Tools &amp; Connectivity</h3>
+            <div class="component-grid">
+              <div class="component-card">
+                <h4>🔧 Action Groups (Tools)</h4>
+                <p>
+                  Lambda functions, REST APIs, code interpreters &amp;
+                  <strong>MCP</strong> servers that let agents act in the real world.
+                </p>
+              </div>
+              <div class="component-card">
+                <h4>🔌 MCP Gateway</h4>
+                <p>
+                  Unified API integration — MCP-compatible endpoint for
+                  agent &amp; tool discovery across platforms.
+                </p>
+              </div>
+              <div class="component-card">
+                <h4>🌐 Agent Browser</h4>
+                <p>
+                  Web access and automation — browse, scrape, and interact
+                  with web pages programmatically.
+                </p>
+              </div>
+              <div class="component-card">
+                <h4>💾 Memory &amp; Context Storage</h4>
+                <p>
+                  <strong>Short-term:</strong> conversation context within a session.<br/>
+                  <strong>Long-term:</strong> persistent state across sessions.
+                </p>
+              </div>
+            </div>
+          </section>
+          <section>
+            <h3>Security, Hosting &amp; Ops</h3>
+            <div class="component-grid">
+              <div class="component-card">
+                <h4>🪪 Identity &amp; Auth</h4>
+                <p>
+                  Agent identity management with credential &amp; token handling.
+                  Supports complex auth flows (OAuth, SAML).
+                </p>
+              </div>
+              <div class="component-card">
+                <h4>🛡️ Guardrails &amp; Access Controls</h4>
+                <p>
+                  Safety policies, content filtering, tool-call enforcement,
+                  and least-privilege access controls.
+                </p>
+              </div>
+              <div class="component-card">
+                <h4>📡 Observability &amp; Evals</h4>
+                <p>
+                  <strong>Monitoring:</strong> trace, debug, operational metrics.<br/>
+                  <strong>Evaluations:</strong> real-time scoring &amp; automated
+                  performance measurement.
+                </p>
+              </div>
+              <div class="component-card">
+                <h4>☁️ Serverless Hosting</h4>
+                <p>
+                  <strong>Agentcore Runtime</strong> — framework-agnostic serverless
+                  compute. No infra to manage.
                 </p>
               </div>
             </div>
           </section>
           <section>
             <h3>How Components Interact</h3>
-            <div class="architecture-flow">
-              <div class="flow-box">📋 Planner</div>
-              <div class="flow-arrow">→</div>
-              <div class="flow-box">🧠 LLM</div>
-              <div class="flow-arrow">→</div>
-              <div class="flow-box">🔧 Tools</div>
-            </div>
-            <div class="architecture-flow">
-              <div class="flow-box">🔧 Tools</div>
-              <div class="flow-arrow">→</div>
-              <div class="flow-box">🗂️ Memory</div>
-              <div class="flow-arrow">→</div>
-              <div class="flow-box">🧠 LLM</div>
-            </div>
-            <p class="small-text">
-              Memory feeds context back into the LLM for subsequent reasoning
-              steps
-            </p>
+            <svg viewBox="0 0 700 500" width="700" height="500" style="display:block;margin:0 auto;font-family:sans-serif">
+              <defs>
+                <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse" fill="#4285f4">
+                  <path d="M 0 0 L 10 5 L 0 10 z"/>
+                </marker>
+                <marker id="arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse" fill="#4caf50">
+                  <path d="M 0 0 L 10 5 L 0 10 z"/>
+                </marker>
+                <marker id="arrow-orange" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse" fill="#ff9800">
+                  <path d="M 0 0 L 10 5 L 0 10 z"/>
+                </marker>
+              </defs>
+
+              <!-- CENTER: LLM -->
+              <circle cx="350" cy="250" r="55" fill="rgba(66,133,244,0.25)" stroke="#4285f4" stroke-width="2"/>
+              <text x="350" y="240" text-anchor="middle" fill="white" font-size="14">🧠 LLM</text>
+              <text x="350" y="256" text-anchor="middle" fill="#aaa" font-size="9">(Foundation Model)</text>
+              <text x="350" y="270" text-anchor="middle" fill="#aaa" font-size="8">+ Strands SDK</text>
+
+              <!-- Connector lines (drawn first so nodes appear on top) -->
+              <!-- To User Goal (top) -->
+              <line class="flow-path" x1="350" y1="195" x2="350" y2="70" stroke="#4285f4" stroke-width="2" marker-end="url(#arrow)"/>
+              <!-- To Skills (top-right) -->
+              <line class="flow-path" x1="395" y1="210" x2="520" y2="60" stroke="#4caf50" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+              <!-- To Tools + MCP Gateway (right-upper) -->
+              <line class="flow-path" x1="405" y1="240" x2="530" y2="185" stroke="#4285f4" stroke-width="2" marker-end="url(#arrow)"/>
+              <!-- To Browser + KB (right-lower) -->
+              <line class="flow-path" x1="405" y1="265" x2="530" y2="310" stroke="#4caf50" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+              <!-- To Hosting (bottom-right) -->
+              <line class="flow-path" x1="385" y1="300" x2="510" y2="420" stroke="#ff9800" stroke-width="1.5" marker-end="url(#arrow-orange)"/>
+              <!-- To Observability & Evals (bottom) -->
+              <line class="flow-path" x1="350" y1="305" x2="350" y2="430" stroke="#4caf50" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+              <!-- To Guardrails (bottom-left) -->
+              <line class="flow-path" x1="315" y1="300" x2="190" y2="420" stroke="#4caf50" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+              <!-- To Memory (left-lower) -->
+              <line class="flow-path" x1="295" y1="265" x2="170" y2="310" stroke="#4285f4" stroke-width="2" marker-end="url(#arrow)"/>
+              <!-- To Identity (left-upper) -->
+              <line class="flow-path" x1="295" y1="240" x2="170" y2="185" stroke="#ff9800" stroke-width="1.5" marker-end="url(#arrow-orange)"/>
+              <!-- To Knowledge Base (top-left) -->
+              <line class="flow-path" x1="305" y1="210" x2="180" y2="60" stroke="#4caf50" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+
+              <!-- TOP: User Goal -->
+              <rect x="275" y="15" width="150" height="45" rx="8" fill="rgba(66,133,244,0.2)" stroke="#4285f4"/>
+              <text x="350" y="43" text-anchor="middle" fill="white" font-size="13">🧑 User Goal</text>
+
+              <!-- TOP-RIGHT: Skills -->
+              <rect x="520" y="30" width="120" height="40" rx="8" fill="rgba(66,133,244,0.2)" stroke="#4285f4"/>
+              <text x="580" y="55" text-anchor="middle" fill="white" font-size="11">📝 Skills</text>
+
+              <!-- RIGHT-UPPER: Tools + MCP -->
+              <rect x="535" y="160" width="150" height="50" rx="8" fill="rgba(66,133,244,0.2)" stroke="#4285f4"/>
+              <text x="610" y="182" text-anchor="middle" fill="white" font-size="11">🔧 Tools</text>
+              <text x="610" y="198" text-anchor="middle" fill="#aaa" font-size="9">+ 🔌 MCP Gateway</text>
+
+              <!-- RIGHT-LOWER: Browser + KB -->
+              <rect x="535" y="290" width="150" height="50" rx="8" fill="rgba(76,175,80,0.15)" stroke="#4caf50"/>
+              <text x="610" y="312" text-anchor="middle" fill="white" font-size="11">🌐 Browser</text>
+              <text x="610" y="328" text-anchor="middle" fill="#aaa" font-size="9">+ 📚 Knowledge Base</text>
+
+              <!-- BOTTOM-RIGHT: Serverless Hosting -->
+              <rect x="490" y="410" width="170" height="40" rx="8" fill="rgba(255,152,0,0.15)" stroke="#ff9800"/>
+              <text x="575" y="435" text-anchor="middle" fill="white" font-size="11">☁️ Serverless Hosting</text>
+
+              <!-- BOTTOM: Observability & Evals -->
+              <rect x="255" y="435" width="190" height="40" rx="8" fill="rgba(76,175,80,0.15)" stroke="#4caf50"/>
+              <text x="350" y="460" text-anchor="middle" fill="white" font-size="11">📡 Observability &amp; Evals</text>
+
+              <!-- BOTTOM-LEFT: Guardrails & Access -->
+              <rect x="30" y="410" width="180" height="40" rx="8" fill="rgba(76,175,80,0.15)" stroke="#4caf50"/>
+              <text x="120" y="435" text-anchor="middle" fill="white" font-size="11">🛡️ Guardrails &amp; Access</text>
+
+              <!-- LEFT-LOWER: Memory -->
+              <rect x="15" y="290" width="150" height="50" rx="8" fill="rgba(66,133,244,0.2)" stroke="#4285f4"/>
+              <text x="90" y="312" text-anchor="middle" fill="white" font-size="11">💾 Memory</text>
+              <text x="90" y="328" text-anchor="middle" fill="#aaa" font-size="9">+ Context Storage</text>
+
+              <!-- LEFT-UPPER: Identity & Auth -->
+              <rect x="15" y="160" width="150" height="50" rx="8" fill="rgba(255,152,0,0.15)" stroke="#ff9800"/>
+              <text x="90" y="182" text-anchor="middle" fill="white" font-size="11">🪪 Identity</text>
+              <text x="90" y="198" text-anchor="middle" fill="#aaa" font-size="9">&amp; Auth</text>
+
+              <!-- TOP-LEFT: Knowledge Base -->
+              <rect x="40" y="30" width="160" height="40" rx="8" fill="rgba(76,175,80,0.15)" stroke="#4caf50"/>
+              <text x="120" y="55" text-anchor="middle" fill="white" font-size="11">📚 Knowledge Base</text>
+
+              <!-- Legend -->
+              <line x1="20" y1="490" x2="45" y2="490" stroke="#4285f4" stroke-width="2"/>
+              <text x="50" y="494" fill="#aaa" font-size="10">Core loop</text>
+              <line x1="120" y1="490" x2="145" y2="490" stroke="#4caf50" stroke-width="1.5"/>
+              <text x="150" y="494" fill="#aaa" font-size="10">Supporting</text>
+              <line x1="230" y1="490" x2="255" y2="490" stroke="#ff9800" stroke-width="1.5"/>
+              <text x="260" y="494" fill="#aaa" font-size="10">Platform</text>
+            </svg>
           </section>
         </section>
 
@@ -272,29 +409,171 @@
             └── Reviewer Agent (validation)</code></pre>
           </section>
           <section>
-            <h3>Other Patterns</h3>
-            <ul>
-              <li>
-                <strong>Reflection:</strong> Agent critiques its own output and
-                iterates
-              </li>
-              <li>
-                <strong>Plan-and-Execute:</strong> Separate planning step, then
-                sequential execution
-              </li>
-              <li>
-                <strong>Tool-use / Function Calling:</strong> LLM selects from
-                structured tool definitions
-              </li>
-              <li>
-                <strong>RAG + Agent:</strong> Retrieval-augmented generation as a
-                tool inside the agent loop
-              </li>
-              <li>
-                <strong>Human-in-the-loop:</strong> Agent pauses for user
-                approval at critical steps
-              </li>
-            </ul>
+            <h3>Workflow Patterns</h3>
+            <div class="component-grid">
+              <div class="component-card">
+                <h4>🔗 Sequential Workflow</h4>
+                <svg viewBox="0 0 220 40" width="220" height="40" style="display:block;margin:0.3em auto">
+                  <rect x="0" y="10" width="50" height="22" rx="4" fill="rgba(66,133,244,0.25)" stroke="#4285f4"/>
+                  <text x="25" y="25" text-anchor="middle" fill="white" font-size="9">Agent A</text>
+                  <line x1="52" y1="21" x2="80" y2="21" stroke="#4285f4" stroke-width="1.5" marker-end="url(#arrow)"/>
+                  <rect x="82" y="10" width="50" height="22" rx="4" fill="rgba(66,133,244,0.25)" stroke="#4285f4"/>
+                  <text x="107" y="25" text-anchor="middle" fill="white" font-size="9">Agent B</text>
+                  <line x1="134" y1="21" x2="162" y2="21" stroke="#4285f4" stroke-width="1.5" marker-end="url(#arrow)"/>
+                  <rect x="164" y="10" width="50" height="22" rx="4" fill="rgba(66,133,244,0.25)" stroke="#4285f4"/>
+                  <text x="189" y="25" text-anchor="middle" fill="white" font-size="9">Agent C</text>
+                </svg>
+                <p>Tasks completed step-by-step; each agent's output feeds the next.</p>
+              </div>
+              <div class="component-card">
+                <h4>⚡ Parallel Workflow</h4>
+                <svg viewBox="0 0 220 70" width="220" height="70" style="display:block;margin:0.3em auto">
+                  <rect x="0" y="24" width="45" height="22" rx="4" fill="rgba(76,175,80,0.2)" stroke="#4caf50"/>
+                  <text x="22" y="39" text-anchor="middle" fill="white" font-size="8">Input</text>
+                  <line x1="47" y1="30" x2="75" y2="12" stroke="#4caf50" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+                  <line x1="47" y1="35" x2="75" y2="35" stroke="#4caf50" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+                  <line x1="47" y1="40" x2="75" y2="58" stroke="#4caf50" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+                  <rect x="77" y="2" width="55" height="20" rx="4" fill="rgba(66,133,244,0.25)" stroke="#4285f4"/>
+                  <text x="104" y="16" text-anchor="middle" fill="white" font-size="8">Agent A</text>
+                  <rect x="77" y="25" width="55" height="20" rx="4" fill="rgba(66,133,244,0.25)" stroke="#4285f4"/>
+                  <text x="104" y="39" text-anchor="middle" fill="white" font-size="8">Agent B</text>
+                  <rect x="77" y="48" width="55" height="20" rx="4" fill="rgba(66,133,244,0.25)" stroke="#4285f4"/>
+                  <text x="104" y="62" text-anchor="middle" fill="white" font-size="8">Agent C</text>
+                  <line x1="134" y1="12" x2="168" y2="30" stroke="#4caf50" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+                  <line x1="134" y1="35" x2="168" y2="35" stroke="#4caf50" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+                  <line x1="134" y1="58" x2="168" y2="40" stroke="#4caf50" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+                  <rect x="170" y="24" width="48" height="22" rx="4" fill="rgba(76,175,80,0.2)" stroke="#4caf50"/>
+                  <text x="194" y="39" text-anchor="middle" fill="white" font-size="8">Merge</text>
+                </svg>
+                <p>Multiple agents execute simultaneously. Results aggregated downstream.</p>
+              </div>
+              <div class="component-card">
+                <h4>🔀 LLM Routing</h4>
+                <svg viewBox="0 0 220 80" width="220" height="80" style="display:block;margin:0.3em auto">
+                  <rect x="2" y="0" width="55" height="18" rx="4" fill="rgba(66,133,244,0.25)" stroke="#4285f4"/>
+                  <text x="29" y="13" text-anchor="middle" fill="white" font-size="7">Simple LLM</text>
+                  <rect x="155" y="0" width="60" height="18" rx="4" fill="rgba(76,175,80,0.2)" stroke="#4caf50"/>
+                  <text x="185" y="13" text-anchor="middle" fill="white" font-size="7">Complex LLM</text>
+                  <rect x="75" y="28" width="60" height="22" rx="4" fill="rgba(255,152,0,0.25)" stroke="#ff9800"/>
+                  <text x="105" y="43" text-anchor="middle" fill="white" font-size="9">Router</text>
+                  <rect x="65" y="64" width="80" height="14" rx="4" fill="rgba(255,152,0,0.15)" stroke="#ff9800"/>
+                  <text x="105" y="75" text-anchor="middle" fill="white" font-size="7">Ambiguous LLM</text>
+                  <line x1="82" y1="28" x2="50" y2="21" stroke="#4285f4" stroke-width="1.5" marker-end="url(#arrow)"/>
+                  <line x1="128" y1="28" x2="162" y2="21" stroke="#4caf50" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+                  <line x1="105" y1="50" x2="105" y2="60" stroke="#ff9800" stroke-width="1.5" marker-end="url(#arrow-orange)"/>
+                </svg>
+                <p>Directs queries to the best model by complexity or cost.</p>
+              </div>
+              <div class="component-card">
+                <h4>🔁 Reflection</h4>
+                <svg viewBox="0 0 220 62" width="220" height="62" style="display:block;margin:0.3em auto">
+                  <rect x="10" y="8" width="60" height="22" rx="4" fill="rgba(66,133,244,0.25)" stroke="#4285f4"/>
+                  <text x="40" y="23" text-anchor="middle" fill="white" font-size="9">Generate</text>
+                  <rect x="140" y="8" width="60" height="22" rx="4" fill="rgba(255,152,0,0.2)" stroke="#ff9800"/>
+                  <text x="170" y="23" text-anchor="middle" fill="white" font-size="9">Judge</text>
+                  <line x1="72" y1="19" x2="136" y2="19" stroke="#4285f4" stroke-width="1.5" marker-end="url(#arrow)"/>
+                  <text x="105" y="14" text-anchor="middle" fill="#aaa" font-size="7">output</text>
+                  <path d="M 170 32 C 170 56, 40 56, 40 38" fill="none" stroke="#ff9800" stroke-width="1.5"/>
+                  <polygon points="40,30 34,38 46,38" fill="#ff9800"/>
+                  <text x="105" y="52" text-anchor="middle" fill="#aaa" font-size="7">feedback</text>
+                </svg>
+                <p>Iteratively refines output via a feedback loop until criteria met.</p>
+              </div>
+            </div>
+          </section>
+          <section>
+            <h3>Tool Patterns</h3>
+            <div class="component-grid">
+              <div class="component-card">
+                <h4>🐍 Pure Python Tools</h4>
+                <svg viewBox="0 0 220 55" width="220" height="55" style="display:block;margin:0.3em auto">
+                  <rect x="2" y="2" width="50" height="16" rx="3" fill="rgba(76,175,80,0.15)" stroke="#4caf50"/>
+                  <text x="27" y="14" text-anchor="middle" fill="white" font-size="7">@tool fn</text>
+                  <rect x="2" y="37" width="50" height="16" rx="3" fill="rgba(76,175,80,0.15)" stroke="#4caf50"/>
+                  <text x="27" y="49" text-anchor="middle" fill="white" font-size="7">Class tool</text>
+                  <rect x="160" y="2" width="55" height="16" rx="3" fill="rgba(76,175,80,0.15)" stroke="#4caf50"/>
+                  <text x="187" y="14" text-anchor="middle" fill="white" font-size="7">Predefined</text>
+                  <rect x="70" y="15" width="70" height="25" rx="4" fill="rgba(66,133,244,0.25)" stroke="#4285f4"/>
+                  <text x="105" y="32" text-anchor="middle" fill="white" font-size="9">Agent</text>
+                  <line x1="68" y1="22" x2="55" y2="12" stroke="#4caf50" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+                  <line x1="68" y1="34" x2="55" y2="44" stroke="#4caf50" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+                  <line x1="142" y1="22" x2="157" y2="12" stroke="#4caf50" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+                </svg>
+                <p>Decorator functions, class methods, or built-in tools. Clean separation of reasoning vs. execution.</p>
+              </div>
+              <div class="component-card">
+                <h4>🔌 Tools from MCP Servers</h4>
+                <svg viewBox="0 0 220 45" width="220" height="45" style="display:block;margin:0.3em auto">
+                  <rect x="5" y="10" width="55" height="25" rx="4" fill="rgba(66,133,244,0.25)" stroke="#4285f4"/>
+                  <text x="32" y="27" text-anchor="middle" fill="white" font-size="9">Agent</text>
+                  <line x1="62" y1="22" x2="82" y2="22" stroke="#4285f4" stroke-width="1.5" marker-end="url(#arrow)"/>
+                  <rect x="84" y="5" width="60" height="35" rx="4" fill="rgba(255,152,0,0.15)" stroke="#ff9800"/>
+                  <text x="114" y="20" text-anchor="middle" fill="white" font-size="8">MCP</text>
+                  <text x="114" y="32" text-anchor="middle" fill="#aaa" font-size="7">STDIO/HTTP</text>
+                  <line x1="146" y1="22" x2="162" y2="22" stroke="#ff9800" stroke-width="1.5" marker-end="url(#arrow-orange)"/>
+                  <rect x="164" y="10" width="52" height="25" rx="4" fill="rgba(76,175,80,0.2)" stroke="#4caf50"/>
+                  <text x="190" y="20" text-anchor="middle" fill="white" font-size="7">External</text>
+                  <text x="190" y="30" text-anchor="middle" fill="white" font-size="7">APIs</text>
+                </svg>
+                <p>Open standard (MCP) to connect agents to external tools via STDIO or Streamable HTTP.</p>
+              </div>
+            </div>
+          </section>
+          <section>
+            <h3>Multi-Agent Patterns</h3>
+            <div class="component-grid">
+              <div class="component-card">
+                <h4>🎯 Agents as Tools</h4>
+                <svg viewBox="0 0 200 65" width="200" height="65" style="display:block;margin:0.3em auto">
+                  <rect x="55" y="2" width="80" height="22" rx="4" fill="rgba(255,152,0,0.25)" stroke="#ff9800"/>
+                  <text x="95" y="17" text-anchor="middle" fill="white" font-size="9">Orchestrator</text>
+                  <line x1="70" y1="24" x2="30" y2="40" stroke="#4285f4" stroke-width="1.5" marker-end="url(#arrow)"/>
+                  <line x1="95" y1="24" x2="95" y2="40" stroke="#4285f4" stroke-width="1.5" marker-end="url(#arrow)"/>
+                  <line x1="120" y1="24" x2="160" y2="40" stroke="#4285f4" stroke-width="1.5" marker-end="url(#arrow)"/>
+                  <rect x="2" y="42" width="55" height="20" rx="4" fill="rgba(66,133,244,0.25)" stroke="#4285f4"/>
+                  <text x="29" y="56" text-anchor="middle" fill="white" font-size="8">Worker A</text>
+                  <rect x="67" y="42" width="55" height="20" rx="4" fill="rgba(66,133,244,0.25)" stroke="#4285f4"/>
+                  <text x="94" y="56" text-anchor="middle" fill="white" font-size="8">Worker B</text>
+                  <rect x="132" y="42" width="55" height="20" rx="4" fill="rgba(66,133,244,0.25)" stroke="#4285f4"/>
+                  <text x="159" y="56" text-anchor="middle" fill="white" font-size="8">Worker C</text>
+                </svg>
+                <p>Specialized worker agents exposed as callable tools to a central orchestrator.</p>
+              </div>
+              <div class="component-card">
+                <h4>🐝 Swarm</h4>
+                <svg viewBox="0 0 180 65" width="180" height="65" style="display:block;margin:0.3em auto">
+                  <rect x="55" y="2" width="55" height="20" rx="4" fill="rgba(66,133,244,0.25)" stroke="#4285f4"/>
+                  <text x="82" y="16" text-anchor="middle" fill="white" font-size="8">Agent A</text>
+                  <rect x="2" y="40" width="55" height="20" rx="4" fill="rgba(76,175,80,0.2)" stroke="#4caf50"/>
+                  <text x="29" y="54" text-anchor="middle" fill="white" font-size="8">Agent B</text>
+                  <rect x="110" y="40" width="55" height="20" rx="4" fill="rgba(255,152,0,0.2)" stroke="#ff9800"/>
+                  <text x="137" y="54" text-anchor="middle" fill="white" font-size="8">Agent C</text>
+                  <line x1="60" y1="22" x2="35" y2="40" stroke="#aaa" stroke-width="1" stroke-dasharray="4 2"/>
+                  <line x1="100" y1="22" x2="130" y2="40" stroke="#aaa" stroke-width="1" stroke-dasharray="4 2"/>
+                  <line x1="57" y1="48" x2="110" y2="48" stroke="#aaa" stroke-width="1" stroke-dasharray="4 2"/>
+                  <text x="82" y="36" text-anchor="middle" fill="#aaa" font-size="7">handoffs</text>
+                </svg>
+                <p>Autonomous peers collaborate with shared memory &amp; dynamic handoffs.</p>
+              </div>
+              <div class="component-card">
+                <h4>📊 Graph Multi-Agent</h4>
+                <svg viewBox="0 0 200 72" width="200" height="72" style="display:block;margin:0.3em auto">
+                  <rect x="70" y="0" width="55" height="18" rx="4" fill="rgba(255,152,0,0.25)" stroke="#ff9800"/>
+                  <text x="97" y="13" text-anchor="middle" fill="white" font-size="8">Router</text>
+                  <rect x="5" y="30" width="55" height="18" rx="4" fill="rgba(66,133,244,0.25)" stroke="#4285f4"/>
+                  <text x="32" y="43" text-anchor="middle" fill="white" font-size="8">Agent A</text>
+                  <rect x="130" y="30" width="55" height="18" rx="4" fill="rgba(66,133,244,0.25)" stroke="#4285f4"/>
+                  <text x="157" y="43" text-anchor="middle" fill="white" font-size="8">Agent B</text>
+                  <rect x="65" y="58" width="65" height="14" rx="4" fill="rgba(76,175,80,0.2)" stroke="#4caf50"/>
+                  <text x="97" y="69" text-anchor="middle" fill="white" font-size="7">Aggregator</text>
+                  <line x1="78" y1="20" x2="40" y2="27" stroke="#4285f4" stroke-width="1.5" marker-end="url(#arrow)"/>
+                  <line x1="118" y1="20" x2="152" y2="27" stroke="#4285f4" stroke-width="1.5" marker-end="url(#arrow)"/>
+                  <line x1="40" y1="50" x2="80" y2="55" stroke="#4caf50" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+                  <line x1="150" y1="50" x2="118" y2="55" stroke="#4caf50" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+                </svg>
+                <p>DAG-based orchestration: nodes are agents, edges define dependencies.</p>
+              </div>
+            </div>
           </section>
         </section>
 
@@ -349,6 +628,12 @@
                   <td>Enterprise-ready, plugins, planners, Azure integration</td>
                 </tr>
                 <tr>
+                  <td><strong>Strands Agents</strong></td>
+                  <td>AWS</td>
+                  <td>Python</td>
+                  <td>Model-driven, simple SDK, built-in AWS service tools, multi-agent support</td>
+                </tr>
+                <tr>
                   <td><strong>Haystack</strong></td>
                   <td>deepset</td>
                   <td>Python</td>
@@ -374,6 +659,9 @@
                 <strong>Graph-based workflows?</strong> → LangGraph
               </li>
               <li>
+                <strong>AWS-native agents?</strong> → Strands Agents
+              </li>
+              <li>
                 <strong>RAG-heavy pipelines?</strong> → Haystack
               </li>
             </ul>
@@ -384,86 +672,148 @@
         <section>
           <section>
             <h2>Building an Agent</h2>
-            <p class="subtitle">Code Walkthrough with OpenAI Agents SDK</p>
+            <p class="subtitle">Code Walkthrough with Strands Agents (AWS)</p>
           </section>
           <section>
             <h3>1 — Install</h3>
-            <pre><code class="language-bash">pip install openai-agents</code></pre>
+            <pre><code class="language-bash">pip install strands-agents strands-agents-tools</code></pre>
           </section>
           <section>
-            <h3>2 — Define Tools</h3>
-            <pre><code class="language-python">from agents import function_tool
+            <h3>2 — Pure Python Tools</h3>
+            <pre><code class="language-python">from strands import Agent, tool
+from strands.models import BedrockModel
 
-@function_tool
-def get_weather(city: str) -> str:
-    """Get current weather for a city."""
-    # In production, call a real weather API
-    return f"The weather in {city} is 72°F and sunny."
-
-@function_tool
-def search_web(query: str) -> str:
-    """Search the web for information."""
-    # In production, call a search API
-    return f"Top result for '{query}': ..."
-</code></pre>
-          </section>
-          <section>
-            <h3>3 — Create the Agent</h3>
-            <pre><code class="language-python">from agents import Agent
+@tool
+def suggest_activity(destination: str) -> str:
+    """Suggest a travel activity for a destination."""
+    agent = Agent(
+        model=BedrockModel(model_id="amazon.nova-lite-v1:0"),
+        system_prompt="Suggest one specific travel activity."
+    )
+    return str(agent(f"Activity for {destination}"))
 
 agent = Agent(
-    name="Assistant",
-    instructions="""You are a helpful assistant.
-    Use available tools to answer questions accurately.
-    Always cite your sources when using search.""",
-    tools=[get_weather, search_web],
-    model="gpt-4o",
+    model=BedrockModel(model_id="us.amazon.nova-premier-v1:0"),
+    tools=[suggest_activity],
 )
+agent("Plan a day trip to Rome")
 </code></pre>
           </section>
           <section>
-            <h3>4 — Run the Agent</h3>
-            <pre><code class="language-python">from agents import Runner
+            <h3>3 — Sequential Workflow</h3>
+            <pre><code class="language-python">from strands import Agent
+from strands.models import BedrockModel
 
-result = Runner.run_sync(
-    agent,
-    "What's the weather in San Francisco?"
-)
+model = BedrockModel(model_id="us.amazon.nova-premier-v1:0",
+                     temperature=0.9)
 
-print(result.final_output)
-# → "The weather in San Francisco is 72°F and sunny."
+planner = Agent(model=model, system_prompt="Create a blog outline.",
+                callback_handler=None)
+writer  = Agent(model=model, system_prompt="Expand outline into paragraphs.",
+                callback_handler=None)
+editor  = Agent(model=model, system_prompt="Fix grammar and improve flow.",
+                callback_handler=None)
+
+# Pipeline: planner → writer → editor
+outline    = planner("The Future of AI Agents")
+draft      = writer(outline)
+final_post = editor(draft)
 </code></pre>
           </section>
           <section>
-            <h3>5 — Multi-Agent Handoff</h3>
-            <pre><code class="language-python">from agents import Agent
+            <h3>4 — Tools from MCP Servers</h3>
+            <pre><code class="language-python">from mcp import StdioServerParameters, stdio_client
+from strands import Agent
+from strands.models import BedrockModel
+from strands.tools.mcp import MCPClient
 
-# Specialist agents
-weather_agent = Agent(
-    name="Weather Agent",
-    instructions="You handle weather queries only.",
-    tools=[get_weather],
-)
+mcp_client = MCPClient(lambda: stdio_client(
+    StdioServerParameters(
+        command="uvx",
+        args=["awslabs.aws-healthomics-mcp-server"]
+    )
+))
 
-research_agent = Agent(
-    name="Research Agent",
-    instructions="You handle research queries only.",
-    tools=[search_web],
-)
+with mcp_client:
+    tools = mcp_client.list_tools_sync()
+    agent = Agent(
+        tools=tools,
+        system_prompt="You are a Bioinformatics expert.",
+        model=BedrockModel(model_id="us.amazon.nova-premier-v1:0"),
+    )
+    agent("Create a new genomic variant calling workflow")
+</code></pre>
+          </section>
+          <section>
+            <h3>5 — Agents as Tools (Orchestrator-Workers)</h3>
+            <pre><code class="language-python">from strands import Agent, tool
+from strands.models import BedrockModel
+from strands_tools import retrieve
 
-# Triage agent delegates to specialists
-triage_agent = Agent(
-    name="Triage Agent",
-    instructions="""Determine the user's intent and 
-    hand off to the appropriate specialist.""",
-    handoffs=[weather_agent, research_agent],
-)
+@tool
+def employee_data_assistant(query: str, agent: Agent) -> str:
+    """Handle employee data queries."""
+    return str(Agent(model=agent.model, tools=[retrieve],
+              system_prompt="Employee Data Specialist.")(query))
 
-result = Runner.run_sync(
-    triage_agent,
-    "What's the weather like in Tokyo?"
+@tool
+def leave_mgmt_assistant(query: str, agent: Agent) -> str:
+    """Handle leave / PTO queries."""
+    return str(Agent(model=agent.model, tools=[retrieve],
+              system_prompt="Leave Specialist.")(query))
+
+hr = Agent(
+    model=BedrockModel(model_id="amazon.nova-lite-v1:0"),
+    system_prompt="HR Assistant. Route to specialists.",
+    tools=[employee_data_assistant, leave_mgmt_assistant],
 )
-print(result.final_output)
+hr("What is Mike Chen's PTO balance?")
+</code></pre>
+          </section>
+          <section>
+            <h3>6 — Swarm (Peer Collaboration)</h3>
+            <pre><code class="language-python">from strands import Agent
+from strands.models import BedrockModel
+from strands.multiagent import Swarm
+
+model = BedrockModel(model_id="amazon.nova-pro-v1:0")
+
+trend_analyst  = Agent(model=model, system_prompt="Trend analyst.")
+copywriter     = Agent(model=model, system_prompt="Social media copywriter.")
+community_mgr  = Agent(model=model, system_prompt="Community manager.")
+
+swarm = Swarm(
+    agents=[trend_analyst, copywriter, community_mgr],
+    max_handoffs=15, max_iterations=10,
+)
+result = swarm("Create a viral campaign about AI breakthroughs")
+print(f"Swarm status: {result.status}")
+</code></pre>
+          </section>
+          <section>
+            <h3>7 — Graph Multi-Agent</h3>
+            <pre><code class="language-python">from strands import Agent
+from strands.models import BedrockModel
+from strands.multiagent import GraphBuilder
+
+model = BedrockModel(model_id="amazon.nova-lite-v1:0")
+
+router   = Agent(model=model, name="InputRouter",  system_prompt="Dispatch tasks.")
+recipe   = Agent(model=model, name="RecipeAgent",   system_prompt="Propose a recipe.")
+beverage = Agent(model=model, name="BeverageAgent", system_prompt="Suggest a drink.")
+planner  = Agent(model=model, name="DinnerPlanner", system_prompt="Combine into plan.")
+
+builder = GraphBuilder()
+for a in [router, recipe, beverage, planner]:
+    builder.add_node(a)
+builder.add_edge("InputRouter", "RecipeAgent")
+builder.add_edge("InputRouter", "BeverageAgent")
+builder.add_edge("RecipeAgent", "DinnerPlanner")
+builder.add_edge("BeverageAgent", "DinnerPlanner")
+builder.set_entry_point("InputRouter")
+
+graph = builder.build()
+graph("Formal Italian evening with elegance")
 </code></pre>
           </section>
         </section>
@@ -561,19 +911,27 @@ docker run -p 8000:8000 -e OPENAI_API_KEY=$KEY ai-agent</code></pre>
           <h2>Key Takeaways</h2>
           <ol>
             <li>
-              Agents = LLM + Tools + Memory + Planning
+              Agents = LLM + Skills + Tools + Memory + Guardrails + Identity
             </li>
             <li>
-              The <strong>ReAct loop</strong> is the fundamental pattern
+              <strong>9 agentic patterns</strong> — from simple prompt chaining
+              to multi-agent orchestration — pick the right one for your task
             </li>
             <li>
-              Choose a framework that fits your complexity &amp; ecosystem
+              <strong>Skills (SKILL.md)</strong> are the new standard —
+              portable, structured instructions across Claude, Codex &amp; more
             </li>
             <li>
-              Start simple (single agent) → evolve to multi-agent when needed
+              <strong>MCP</strong> is becoming the universal tool protocol —
+              build once, connect everywhere
             </li>
             <li>
-              Treat deployment like any production service — observability, security, evals
+              <strong>AWS Agentcore</strong> provides the full stack —
+              SDK, serverless hosting, identity, gateway &amp; evals
+            </li>
+            <li>
+              Start simple → add patterns → add tools → go multi-agent.
+              Observe everything.
             </li>
           </ol>
         </section>
@@ -587,8 +945,8 @@ docker run -p 8000:8000 -e OPENAI_API_KEY=$KEY ai-agent</code></pre>
     </div>
 
     <script src="node_modules/reveal.js/dist/reveal.js"></script>
-    <script src="node_modules/reveal.js/plugin/highlight/highlight.js"></script>
-    <script src="node_modules/reveal.js/plugin/notes/notes.js"></script>
+    <script src="node_modules/reveal.js/dist/plugin/highlight.js"></script>
+    <script src="node_modules/reveal.js/dist/plugin/notes.js"></script>
     <script>
       Reveal.initialize({
         hash: true,
