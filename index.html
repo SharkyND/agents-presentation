@@ -119,6 +119,17 @@
         stroke-dasharray: 8 4;
         animation: flowDash 0.6s linear infinite;
       }
+      /* Title slide animations */
+      @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+      @keyframes orbit { from{transform:rotate(0deg) translateX(120px) rotate(0deg)} to{transform:rotate(360deg) translateX(120px) rotate(-360deg)} }
+      @keyframes orbit2 { from{transform:rotate(120deg) translateX(95px) rotate(-120deg)} to{transform:rotate(480deg) translateX(95px) rotate(-480deg)} }
+      @keyframes orbit3 { from{transform:rotate(240deg) translateX(140px) rotate(-240deg)} to{transform:rotate(600deg) translateX(140px) rotate(-600deg)} }
+      @keyframes pulseGlow { 0%,100%{opacity:0.4;transform:scale(1)} 50%{opacity:0.8;transform:scale(1.15)} }
+      @keyframes particleDrift { 0%{transform:translateY(0) translateX(0);opacity:0} 20%{opacity:1} 80%{opacity:1} 100%{transform:translateY(-60px) translateX(20px);opacity:0} }
+      @keyframes particleDrift2 { 0%{transform:translateY(0) translateX(0);opacity:0} 20%{opacity:0.8} 80%{opacity:0.8} 100%{transform:translateY(-50px) translateX(-25px);opacity:0} }
+      @keyframes spinSlow { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+      .title-anim-wrap { position:relative;width:280px;height:280px;margin:0 auto -1em; }
+      .title-anim-wrap svg { position:absolute;top:0;left:0; }
     </style>
   </head>
   <body>
@@ -140,7 +151,57 @@
       <div class="slides">
         <!-- ============ TITLE SLIDE ============ -->
         <section>
-          <h1>🤖 AI Agents</h1>
+          <div class="title-anim-wrap">
+            <svg viewBox="0 0 280 280" width="280" height="280">
+              <!-- Outer glow ring -->
+              <circle cx="140" cy="140" r="110" fill="none" stroke="rgba(66,133,244,0.12)" stroke-width="1">
+                <animateTransform attributeName="transform" type="rotate" from="0 140 140" to="360 140 140" dur="30s" repeatCount="indefinite"/>
+              </circle>
+              <circle cx="140" cy="140" r="90" fill="none" stroke="rgba(76,175,80,0.10)" stroke-width="1" stroke-dasharray="6 8">
+                <animateTransform attributeName="transform" type="rotate" from="360 140 140" to="0 140 140" dur="20s" repeatCount="indefinite"/>
+              </circle>
+
+              <!-- Pulsing core brain -->
+              <circle cx="140" cy="140" r="38" fill="rgba(66,133,244,0.15)" stroke="#4285f4" stroke-width="1.5" style="animation:pulseGlow 3s ease-in-out infinite"/>
+              <text x="140" y="148" text-anchor="middle" font-size="32" style="animation:float 3s ease-in-out infinite">🧠</text>
+
+              <!-- Orbiting agent nodes -->
+              <g style="transform-origin:140px 140px;animation:orbit 8s linear infinite">
+                <circle cx="140" cy="140" r="14" fill="rgba(255,152,0,0.2)" stroke="#ff9800" stroke-width="1"/>
+                <text x="140" y="146" text-anchor="middle" font-size="14">🔧</text>
+              </g>
+              <g style="transform-origin:140px 140px;animation:orbit2 10s linear infinite">
+                <circle cx="140" cy="140" r="14" fill="rgba(76,175,80,0.2)" stroke="#4caf50" stroke-width="1"/>
+                <text x="140" y="146" text-anchor="middle" font-size="14">📝</text>
+              </g>
+              <g style="transform-origin:140px 140px;animation:orbit3 12s linear infinite">
+                <circle cx="140" cy="140" r="14" fill="rgba(66,133,244,0.2)" stroke="#4285f4" stroke-width="1"/>
+                <text x="140" y="146" text-anchor="middle" font-size="14">💾</text>
+              </g>
+
+              <!-- Floating particles -->
+              <circle cx="80" cy="200" r="2" fill="#4285f4" opacity="0" style="animation:particleDrift 4s ease-in-out 0s infinite"/>
+              <circle cx="200" cy="190" r="1.5" fill="#4caf50" opacity="0" style="animation:particleDrift2 5s ease-in-out 1s infinite"/>
+              <circle cx="160" cy="220" r="2" fill="#ff9800" opacity="0" style="animation:particleDrift 6s ease-in-out 2s infinite"/>
+              <circle cx="100" cy="180" r="1.5" fill="#4285f4" opacity="0" style="animation:particleDrift2 4.5s ease-in-out 0.5s infinite"/>
+              <circle cx="180" cy="210" r="2" fill="#4caf50" opacity="0" style="animation:particleDrift 5.5s ease-in-out 1.5s infinite"/>
+
+              <!-- Connection lines (pulse) -->
+              <line x1="140" y1="140" x2="60" y2="80" stroke="#4285f4" stroke-width="0.5" opacity="0.3" stroke-dasharray="4 6">
+                <animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.5s" repeatCount="indefinite"/>
+              </line>
+              <line x1="140" y1="140" x2="220" y2="80" stroke="#4caf50" stroke-width="0.5" opacity="0.3" stroke-dasharray="4 6">
+                <animate attributeName="stroke-dashoffset" from="0" to="-20" dur="2s" repeatCount="indefinite"/>
+              </line>
+              <line x1="140" y1="140" x2="60" y2="220" stroke="#ff9800" stroke-width="0.5" opacity="0.3" stroke-dasharray="4 6">
+                <animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.8s" repeatCount="indefinite"/>
+              </line>
+              <line x1="140" y1="140" x2="220" y2="220" stroke="#4285f4" stroke-width="0.5" opacity="0.3" stroke-dasharray="4 6">
+                <animate attributeName="stroke-dashoffset" from="0" to="-20" dur="2.2s" repeatCount="indefinite"/>
+              </line>
+            </svg>
+          </div>
+          <h1 style="margin-top:-0.2em">AI Agents</h1>
           <p class="subtitle">From Concepts to Deployment</p>
           <p class="small-text">March 2026</p>
         </section>
